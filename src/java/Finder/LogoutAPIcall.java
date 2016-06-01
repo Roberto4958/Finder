@@ -19,36 +19,35 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("find/{locationX}/{locationY}")
-public class TheFinder {
+@Path("logout")
+public class LogoutAPIcall {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of TheFinder
+     * Creates a new instance of LogoutAPIcall
      */
-    public TheFinder() {
+    public LogoutAPIcall() {
     }
 
     /**
-     * Retrieves representation of an instance of Finder.TheFinder
+     * Retrieves representation of an instance of Finder.LogoutAPIcall
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces("text/html")
-    public String SendLocation(@PathParam("locationX") int x, @PathParam("locationY") int y ) {
-       return "Your location is "+x+", "+y;
-        //throw new UnsupportedOperationException();
+    @Produces("application/json")
+    public String getJson() {
+        return "You have succesfully loged out";
     }
 
     /**
-     * PUT method for updating or creating an instance of TheFinder
+     * PUT method for updating or creating an instance of LogoutAPIcall
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    @Consumes("text/html")
-    public void putHtml(String content) {
+    @Consumes("application/json")
+    public void putJson(String content) {
     }
 }
