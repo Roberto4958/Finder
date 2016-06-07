@@ -16,7 +16,7 @@ public class DatabaseTester {
     public static void main(String args[])
     {
         Database db = new Database();
-        System.out.println(db.LogIn("user1","pass1"));
+        System.out.println(db.createAccount("user6", "pass6", "Julie", "Walker"));
     }
     
     
