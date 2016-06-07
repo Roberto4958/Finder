@@ -38,7 +38,7 @@ public class GetHistoryAPIcall {
     @GET
     @Produces("application/json")
     public String getJson() {
-        return "Here is your hestory";
+        return "Here is your history";
     }
 
     /**
