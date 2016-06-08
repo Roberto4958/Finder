@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 
 /**
@@ -19,7 +20,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("SendLocation/{locationX}/{locationY}")
+@Path("SendLocation/{locationX}/{locationY}/{ID}")
 public class SendLocationAPIcall {
 
     @Context
@@ -36,10 +37,9 @@ public class SendLocationAPIcall {
      * @return an instance of java.lang.String
      */
     @GET
-    @Produces("text/html")
-    public String SendLocation(@PathParam("locationX") int x, @PathParam("locationY") int y ) {
-       return "Your location is "+x+", "+y;
-        //throw new UnsupportedOperationException();
+    @Produces("application/json")
+    public String SendLocation() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -48,7 +48,8 @@ public class SendLocationAPIcall {
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    @Consumes("text/html")
-    public void putHtml(String content) {
+    public void putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("ID") int id ) {
+        Database db = new Database();
+        db.sendLocation(id, x, y);
     }
 }

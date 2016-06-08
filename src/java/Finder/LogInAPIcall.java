@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("username/{username}")
+@Path("logIn/{username}/{password}")
 public class LogInAPIcall {
 
     @Context
@@ -37,8 +37,10 @@ public class LogInAPIcall {
      */
     @GET
     @Produces("application/json")
-    public String getJson(@PathParam("username") String name) {                        
-        return "Welcome "+name;
+    public String getJson(@PathParam("username") String name, @PathParam("password") String pass)
+    {                        
+        Database db = new Database();
+        return db.LogIn(name, pass);
         //throw new UnsupportedOperationException();
     }
 

@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("history")
+@Path("history/{ID}")
 public class GetHistoryAPIcall {
 
     @Context
@@ -37,8 +37,9 @@ public class GetHistoryAPIcall {
      */
     @GET
     @Produces("application/json")
-    public String getJson() {
-        return "Here is your history";
+    public String getJson(@PathParam("ID") int id) {
+        Database db = new Database();   
+        return "Here is your history \n"+db.getHistory(id);
     }
 
     /**

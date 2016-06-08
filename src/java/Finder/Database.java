@@ -84,7 +84,7 @@ public class Database {
     }
 
     public String LogIn(String userName, String password) {
-
+        boolean succesful = false;
         String name = " ";
         Connection conn = null;
         try {
@@ -352,5 +352,45 @@ public class Database {
             }
         }
         return "Your account has been saved";
+    }
+    public void deleteLocation(int ID) {
+
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            String select = "delete from Locations where ID = ?;";
+            PreparedStatement selectStmt = null;
+
+            try {
+                selectStmt = conn.prepareStatement(select);
+                selectStmt.setInt(1, ID);
+                
+                selectStmt.executeUpdate();
+                
+            } finally {
+                if (selectStmt != null) {
+                    selectStmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentTime = new Date();
+            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+            System.out.println(e.getMessage());
+            System.out.println(e.getSQLState());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date currentTime = new Date();
+                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getSQLState());
+                }
+            }
+        }
     }
 }

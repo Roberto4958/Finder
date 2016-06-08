@@ -19,36 +19,37 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("findlocation/{ID}")
-public class FindLocationAPIcall {
+@Path("createAccount/{userName}/{password}/{firstName}/{lastName}")
+public class CreateAccountAPIcall {
 
     @Context
     private UriInfo context;
 
     /**
-     * Creates a new instance of FindLocationAPIcall
+     * Creates a new instance of CreateAccountAPIcall
      */
-    public FindLocationAPIcall() {
+    public CreateAccountAPIcall() {
     }
 
     /**
-     * Retrieves representation of an instance of Finder.FindLocationAPIcall
+     * Retrieves representation of an instance of Finder.CreateAccountAPIcall
      * @return an instance of java.lang.String
      */
     @GET
     @Produces("application/json")
-    public String getJson(@PathParam("ID") int x) {
-        Database db  = new Database();
-        return "Your last location was "+db.findLocation(x);
+    public String getJson() {
+        //TODO return proper representation object
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * PUT method for updating or creating an instance of FindLocationAPIcall
+     * PUT method for updating or creating an instance of CreateAccountAPIcall
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    @Consumes("application/json")
-    public void putJson(String content) {
+    public void putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
+        Database db = new Database();
+        db.createAccount(username, pass, firstname, lastname);
     }
 }

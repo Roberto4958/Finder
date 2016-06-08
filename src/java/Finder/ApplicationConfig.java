@@ -29,6 +29,8 @@ public class ApplicationConfig extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {   
+        resources.add(Finder.CreateAccountAPIcall.class);
+        resources.add(Finder.DeleteLocationAPIcall.class);
         resources.add(Finder.FindLocationAPIcall.class);
         resources.add(Finder.GetHistoryAPIcall.class);
         resources.add(Finder.LogInAPIcall.class);
