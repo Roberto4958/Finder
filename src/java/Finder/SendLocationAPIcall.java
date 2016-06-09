@@ -20,7 +20,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("SendLocation/{locationX}/{locationY}/{ID}")
+@Path("SendLocation/{locationX}/{locationY}/{userID}/{authToken}")
 public class SendLocationAPIcall {
 
     @Context
@@ -48,8 +48,8 @@ public class SendLocationAPIcall {
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    public void putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("ID") int id ) {
+    public String putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
         Database db = new Database();
-        db.sendLocation(id, x, y);
+        return db.sendLocation(userID, x, y, token);
     }
 }

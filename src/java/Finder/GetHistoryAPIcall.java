@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("history/{ID}")
+@Path("history/{userID}/{authToken}")
 public class GetHistoryAPIcall {
 
     @Context
@@ -37,9 +37,9 @@ public class GetHistoryAPIcall {
      */
     @GET
     @Produces("application/json")
-    public String getJson(@PathParam("ID") int id) {
+    public String getJson(@PathParam("userID") int userID, @PathParam("authToken") String token) {
         Database db = new Database();   
-        return "Here is your history \n"+db.getHistory(id);
+        return db.getHistory(userID, token);
     }
 
     /**

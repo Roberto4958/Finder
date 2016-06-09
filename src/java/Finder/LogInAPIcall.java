@@ -5,6 +5,7 @@
  */
 package Finder;
 
+import java.util.Random;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -13,6 +14,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import javax.ws.rs.POST;
+
 
 /**
  * REST Web Service
@@ -37,11 +40,9 @@ public class LogInAPIcall {
      */
     @GET
     @Produces("application/json")
-    public String getJson(@PathParam("username") String name, @PathParam("password") String pass)
-    {                        
-        Database db = new Database();
-        return db.LogIn(name, pass);
-        //throw new UnsupportedOperationException();
+    public String getJson()
+    {   
+        return null;
     }
 
     /**
@@ -49,8 +50,11 @@ public class LogInAPIcall {
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
-    @PUT
-    @Consumes("application/json")
-    public void putJson(String content) {
+    @POST
+    public String putJson(@PathParam("username") String name, @PathParam("password") String pass) {
+       
+        Database db = new Database();    
+        if(db.LogIn(name, pass)) return "Successfully loged in";  
+        else return "Sorry something went wrong";
     }
 }

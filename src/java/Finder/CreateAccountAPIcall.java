@@ -48,8 +48,8 @@ public class CreateAccountAPIcall {
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    public void putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
+    public String putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
         Database db = new Database();
-        db.createAccount(username, pass, firstname, lastname);
+       return db.createAccount(username, pass, firstname, lastname);
     }
 }

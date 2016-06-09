@@ -20,7 +20,7 @@ import javax.ws.rs.DELETE;
  *
  * @author cancola
  */
-@Path("deleteLocation/{ID}")
+@Path("deleteLocation/{userID}/{LocationID}/{authToken}")
 public class DeleteLocationAPIcall {
 
     @Context
@@ -49,8 +49,8 @@ public class DeleteLocationAPIcall {
      * @return an HTTP response with content of the updated or created resource.
      */
     @DELETE
-    public void putJson(@PathParam("ID") int id) {
+    public String putJson(@PathParam("userID")int userID, @PathParam("LocationID") int LocationID, @PathParam("authToken")String token) {
         Database db = new Database();
-        db.deleteLocation(id);  
+        return db.deleteLocation(userID, LocationID, token);  
     }
 }

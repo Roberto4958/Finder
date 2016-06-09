@@ -19,7 +19,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("findlocation/{ID}")
+@Path("findlocation/{userID}/{authToken}")
 public class FindLocationAPIcall {
 
     @Context
@@ -37,9 +37,9 @@ public class FindLocationAPIcall {
      */
     @GET
     @Produces("application/json")
-    public String getJson(@PathParam("ID") int x) {
+    public String getJson(@PathParam("userID") int userID, @PathParam("authToken") String token) {
         Database db  = new Database();
-        return "Your last location was "+db.findLocation(x);
+        return db.findLocation(userID, token);
     }
 
     /**
