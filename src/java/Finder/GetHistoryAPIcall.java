@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import com.google.gson.Gson;
+import DataModel.Location;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -38,8 +40,16 @@ public class GetHistoryAPIcall {
     @GET
     @Produces("application/json")
     public String getJson(@PathParam("userID") int userID, @PathParam("authToken") String token) {
-        Database db = new Database();   
-        return db.getHistory(userID, token);
+        Database db = new Database();  
+        Location[] history = db.getHistory(userID, token);
+        
+        if(history != null){
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(history);   
+            return myReturnJSON;
+        }
+            
+        else return "sorry something went wrong";
     }
 
     /**

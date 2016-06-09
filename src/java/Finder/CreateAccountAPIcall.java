@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import DataModel.User;
+import com.google.gson.Gson;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -50,6 +52,12 @@ public class CreateAccountAPIcall {
     @PUT
     public String putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
         Database db = new Database();
-       return db.createAccount(username, pass, firstname, lastname);
+       User user =  db.createAccount(username, pass, firstname, lastname);
+       if(user != null){
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(user);   
+            return myReturnJSON;
+       }
+       else return "Sorry Something went wrong";
     }
 }

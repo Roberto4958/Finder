@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import com.google.gson.Gson;
+import DataModel.Location;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -39,7 +41,15 @@ public class FindLocationAPIcall {
     @Produces("application/json")
     public String getJson(@PathParam("userID") int userID, @PathParam("authToken") String token) {
         Database db  = new Database();
-        return db.findLocation(userID, token);
+        Location location = db.findLocation(userID, token);
+       
+        if(location != null){
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(location);   
+            return myReturnJSON;
+        }
+                
+        else return "Sorry sothing went wrong";
     }
 
     /**

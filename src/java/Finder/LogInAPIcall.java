@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import com.google.gson.Gson;
+import DataModel.User;
 import java.util.Random;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -53,8 +55,13 @@ public class LogInAPIcall {
     @POST
     public String putJson(@PathParam("username") String name, @PathParam("password") String pass) {
        
-        Database db = new Database();    
-        if(db.LogIn(name, pass)) return "Successfully loged in";  
+        Database db = new Database();   
+        User user = db.LogIn(name, pass);
+        if( user != null){
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(user);   
+            return myReturnJSON;
+        }  
         else return "Sorry something went wrong";
     }
 }
