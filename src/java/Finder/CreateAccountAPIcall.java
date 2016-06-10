@@ -5,6 +5,7 @@
  */
 package Finder;
 
+import ResponseData.UserResponse;
 import DataModel.User;
 import com.google.gson.Gson;
 import javax.ws.rs.core.Context;
@@ -54,10 +55,16 @@ public class CreateAccountAPIcall {
         Database db = new Database();
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
+           UserResponse response = new UserResponse(user, "OK");
             Gson g = new Gson();
-            String myReturnJSON = g.toJson(user);   
+            String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
        }
-       else return "Sorry Something went wrong";
+       else{
+            UserResponse response = new UserResponse(null, "ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+       }
     }
 }

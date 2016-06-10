@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import com.google.gson.Gson;
+import ResponseData.Response;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -50,6 +52,17 @@ public class SendLocationAPIcall {
     @PUT
     public String putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
         Database db = new Database();
-        return db.sendLocation(userID, x, y, token);
+        if(db.sendLocation(userID, x, y, token)){
+            Response response = new Response("OK");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        } 
+        else{
+            Response response = new Response("ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
     }
 }

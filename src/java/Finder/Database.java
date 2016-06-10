@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -184,9 +185,9 @@ public class Database {
         else return null;
     }
 
-    public String sendLocation(int userID, double latitude, double longitude, String authToken) {
+    public boolean sendLocation(int userID, double latitude, double longitude, String authToken) {
        
-        String messege = "You Successfully sent your location";
+        boolean successful = false;
         if(verifyLogInStatus(userID, authToken)){
             Connection conn = null;
             try {
@@ -202,6 +203,7 @@ public class Database {
                     selectStmt.setInt(3, userID);
 
                     selectStmt.executeUpdate();
+                    successful =true;
 
                 } finally {
                     if (selectStmt != null) {
@@ -214,7 +216,6 @@ public class Database {
                 System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
                 System.out.println(e.getMessage());
                 System.out.println(e.getSQLState());
-                messege = "Sorry something went wrong";
             } finally {
                 if (conn != null) {
                     try {
@@ -228,60 +229,15 @@ public class Database {
                     }
                 }
             }
-            return messege;
+            return successful;
         }
-        return "Invalide authToken";
+        return false;
     }
 
-    public int getArraySize(int userID) {
-        
-        int size = 0;
-        Connection conn = null;
-        try {
-            conn = getConnection();
-
-            String select = "select count(ID) from Locations where userID =?;";
-            PreparedStatement selectStmt = null;
-
-            try {
-                selectStmt = conn.prepareStatement(select);
-                selectStmt.setInt(1, userID);
-                ResultSet rs = selectStmt.executeQuery();
-                if (rs != null && rs.next()) {
-                    
-                    size = rs.getInt("count(ID)");
-                }
-            } finally {
-                if (selectStmt != null) {
-                    selectStmt.close();
-                }
-            }
-        } catch (SQLException e) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date currentTime = new Date();
-            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
-            System.out.println(e.getMessage());
-            System.out.println(e.getSQLState());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date currentTime = new Date();
-                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
-                    System.out.println(e.getMessage());
-                    System.out.println(e.getSQLState());
-                }
-            }
-        }
-        return size;
-    }
-    
-    public Location[] getHistory(int userID, String authToken) {
+    public ArrayList<Location> getHistory(int userID, String authToken) {
         
         if(verifyLogInStatus(userID, authToken)){
-            Location[] history = null;
+            ArrayList<Location> history = null;
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -293,12 +249,12 @@ public class Database {
                     selectStmt = conn.prepareStatement(select);
                     selectStmt.setInt(1, userID);
                     ResultSet rs = selectStmt.executeQuery();
-                    int i = 0;
-                    history = new Location[getArraySize(userID)];
+                    history = new ArrayList<Location>();
                     while (rs != null && rs.next()) {
+                        
                         Location l = new Location(rs.getDouble("latitude"), rs.getDouble("longitude"), rs.getInt("ID"));
-                        history[i]= l;
-                        i++;        
+                        history.add(l);
+                               
                     }
                 } finally {
                     if (selectStmt != null) {
@@ -426,9 +382,54 @@ public class Database {
         return user;
     }
 
-    public String deleteLocation(int userID, int locationID, String authToken) {
+    public boolean verifyDeletion(int locationID) {
+       
+        boolean successful = true;
+            Connection conn = null;
+            try {
+                conn = getConnection();
+
+                String select = "select ID from Locations where ID = ?;";
+                PreparedStatement selectStmt = null;
+
+                try {
+                    selectStmt = conn.prepareStatement(select);
+                    selectStmt.setDouble(1, locationID);
+                    ResultSet rs = selectStmt.executeQuery();
+                if (rs != null && rs.next()) {
+                    successful = false;
+                }
+                } finally {
+                    if (selectStmt != null) {
+                        selectStmt.close();
+                    }
+                }
+            } catch (SQLException e) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date currentTime = new Date();
+                System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+                System.out.println(e.getMessage());
+                System.out.println(e.getSQLState());
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date currentTime = new Date();
+                        System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getSQLState());
+                    }
+                }
+            }
+            return successful;
         
-        String messege ="Last location was successfully deleted";
+    }
+    
+    public boolean deleteLocation(int userID, int locationID, String authToken) {
+        
+        boolean succesful =false;
         if(verifyLogInStatus(userID, authToken)){
             Connection conn = null;
             try {
@@ -443,6 +444,8 @@ public class Database {
                     selectStmt.setInt(2,userID);
 
                     selectStmt.executeUpdate();
+                    succesful = true;
+                    if(!verifyDeletion(locationID)) succesful = false;
 
                 } finally {
                     if (selectStmt != null) {
@@ -455,7 +458,6 @@ public class Database {
                 System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
                 System.out.println(e.getMessage());
                 System.out.println(e.getSQLState());
-                messege = "Sorry something went wrong";
             } finally {
                 if (conn != null) {
                     try {
@@ -469,9 +471,9 @@ public class Database {
                     }
                 }
             }
-            return messege; 
+            return succesful; 
         }
-        return "invalid authToken";
+        return false;
     }
 
     public String setAuthToken(int UserID) {
@@ -576,9 +578,9 @@ public class Database {
         return success;
     }
     
-    public String logout(int userID, String token) {
+    public boolean logout(int userID, String token) {
 
-        String messege = "you succesfully loged out";
+        boolean successful = false;
         if (verifyLogInStatus(userID, token)){
             Connection conn = null;
             try {
@@ -591,6 +593,7 @@ public class Database {
                     selectStmt = conn.prepareStatement(select);
                     selectStmt.setInt(1, userID);
                     selectStmt.executeUpdate();
+                    successful = true;
                     
                 } finally {
                     if (selectStmt != null) {
@@ -603,7 +606,6 @@ public class Database {
                 System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
                 System.out.println(e.getMessage());
                 System.out.println(e.getSQLState());
-                messege = "Sorry something went wrong";
             } finally {
                 if (conn != null) {
                     try {
@@ -617,8 +619,8 @@ public class Database {
                     }
                 }
             }
-            return messege;
+            return successful;
         }
-        return "invalid authToken";
+        return false;
     }
 }

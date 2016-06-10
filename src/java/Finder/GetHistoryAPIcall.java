@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import ResponseData.HistoryResponse;
+import java.util.ArrayList;
 import com.google.gson.Gson;
 import DataModel.Location;
 import javax.ws.rs.core.Context;
@@ -41,15 +43,21 @@ public class GetHistoryAPIcall {
     @Produces("application/json")
     public String getJson(@PathParam("userID") int userID, @PathParam("authToken") String token) {
         Database db = new Database();  
-        Location[] history = db.getHistory(userID, token);
+        ArrayList<Location> history = db.getHistory(userID, token);
         
         if(history != null){
+            HistoryResponse response = new HistoryResponse(history, "OK");
             Gson g = new Gson();
-            String myReturnJSON = g.toJson(history);   
+            String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
         }
             
-        else return "sorry something went wrong";
+        else{
+            HistoryResponse response = new HistoryResponse(null, "ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
     }
 
     /**

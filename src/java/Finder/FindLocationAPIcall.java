@@ -5,6 +5,7 @@
  */
 package Finder;
 
+import ResponseData.LocationResponse;
 import com.google.gson.Gson;
 import DataModel.Location;
 import javax.ws.rs.core.Context;
@@ -44,12 +45,18 @@ public class FindLocationAPIcall {
         Location location = db.findLocation(userID, token);
        
         if(location != null){
+            LocationResponse response = new LocationResponse(location, "OK");
             Gson g = new Gson();
-            String myReturnJSON = g.toJson(location);   
+            String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
         }
                 
-        else return "Sorry sothing went wrong";
+        else {
+            LocationResponse response = new LocationResponse(null, "ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
     }
 
     /**

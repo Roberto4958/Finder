@@ -5,6 +5,8 @@
  */
 package Finder;
 
+import com.google.gson.Gson;
+import ResponseData.Response;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -50,6 +52,17 @@ public class LogoutAPIcall {
     @POST
     public String putJson(@PathParam("userID")int userID, @PathParam("authToken") String token) {
         Database db = new Database();
-        return db.logout(userID, token);
+        if(db.logout(userID, token)){
+            Response response = new Response("OK");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        } 
+        else{
+            Response response = new Response("ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
     }
 }

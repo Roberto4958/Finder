@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DataModel;
+package ResponseData;
 
 /**
  *
  * @author cancola
  */
-public class History {
+public class Response {
+   
+    public String status;
     
-    public Location history[];
-    
-    public History(Location[] h){
-        history = h;
+    public Response(String s){
+        status = s;
     }
 }

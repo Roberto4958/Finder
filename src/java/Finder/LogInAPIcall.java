@@ -5,6 +5,7 @@
  */
 package Finder;
 
+import ResponseData.UserResponse;
 import com.google.gson.Gson;
 import DataModel.User;
 import java.util.Random;
@@ -58,10 +59,16 @@ public class LogInAPIcall {
         Database db = new Database();   
         User user = db.LogIn(name, pass);
         if( user != null){
+            UserResponse response = new UserResponse(user,"OK");
             Gson g = new Gson();
-            String myReturnJSON = g.toJson(user);   
+            String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
         }  
-        else return "Sorry something went wrong";
+        else {
+            UserResponse response = new UserResponse(null,"ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
     }
 }
