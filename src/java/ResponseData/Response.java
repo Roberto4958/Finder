@@ -5,6 +5,8 @@
  */
 package ResponseData;
 
+import DataModel.Location;
+import DataModel.User;
 /**
  *
  * @author cancola

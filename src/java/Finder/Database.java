@@ -99,13 +99,14 @@ public class Database {
             PreparedStatement selectStmt = null;
 
             try {
+        
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, userName);
                 selectStmt.setString(2, password);
                 ResultSet rs = selectStmt.executeQuery();
                 if (rs != null && rs.next()) {
            
-                    user = new User(rs.getString("userName"), rs.getString("password"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));
+                    user = new User(rs.getString("userName"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));
                            
                 } 
             } finally {
@@ -185,7 +186,7 @@ public class Database {
         else return null;
     }
 
-    public boolean sendLocation(int userID, double latitude, double longitude, String authToken) {
+    public boolean addNewLocation(int userID, double latitude, double longitude, String authToken) {
        
         boolean successful = false;
         if(verifyLogInStatus(userID, authToken)){
@@ -334,24 +335,26 @@ public class Database {
     public User createAccount(String username, String pass, String firstname, String lastname) {
 
         User user = null;
-        String messege = "you successfully created a account";
         Connection conn = null;
         try {
             conn = getConnection();
 
-            String select = "insert into Users(userName, password, firstName, lastName, authToken) values(?, ?, ?, ?, '');";
+            String select = "insert into Users(userName, password, firstName, lastName, authToken) values(?, ?, ?, ?, ?);";
             PreparedStatement selectStmt = null;
 
             try {
+               String authToken = createRadomString();
+                
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, username);
                 selectStmt.setString(2, pass);
                 selectStmt.setString(3, firstname);
                 selectStmt.setString(4, lastname);
+                selectStmt.setString(5, authToken);
                 
                 selectStmt.executeUpdate();
                 int newUserID = verifyIfAcountCreated(username, pass);
-                if(newUserID != 0) user = new User(username, pass, firstname, lastname, "", newUserID);
+                if(newUserID != 0) user = new User(username, firstname, lastname, authToken, newUserID);
                
                 
             } finally {
@@ -365,7 +368,6 @@ public class Database {
             System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
             System.out.println(e.getMessage());
             System.out.println(e.getSQLState());
-            messege = "Sorry something went wrong";
         } finally {
             if (conn != null) {
                 try {
@@ -487,22 +489,9 @@ public class Database {
             PreparedStatement selectStmt = null;
 
             try {
-                selectStmt = conn.prepareStatement(select);
-                //start building a random token
-                StringBuilder tmp = new StringBuilder();
-                for (char ch = '0'; ch <= '9'; ++ch)
-                    tmp.append(ch);
-                for (char ch = 'a'; ch <= 'z'; ++ch)
-                    tmp.append(ch);
-                char[] symbols = tmp.toString().toCharArray();
-                char[] token = new char[30];
-                Random  random  = new Random();
-                for(int i=0; i < token.length; i++){
-                    token[i] = symbols[random.nextInt(symbols.length)];
-                }
-                RandomToken = new String(token);
-                  
-                selectStmt.setString(1, RandomToken);
+                RandomToken = createRadomString();
+                selectStmt = conn.prepareStatement(select);                           
+                selectStmt.setString(1,RandomToken);
                 selectStmt.setInt(2, UserID);
                 selectStmt.executeUpdate();
             } finally {
@@ -531,6 +520,22 @@ public class Database {
             }
         }
         return RandomToken;
+    }
+    
+    private String createRadomString(){
+                //start building a random token
+                StringBuilder tmp = new StringBuilder();
+                for (char ch = '0'; ch <= '9'; ++ch)
+                    tmp.append(ch);
+                for (char ch = 'a'; ch <= 'z'; ++ch)
+                    tmp.append(ch);
+                char[] symbols = tmp.toString().toCharArray();
+                char[] token = new char[30];
+                Random  random  = new Random();
+                for(int i=0; i < token.length; i++){
+                    token[i] = symbols[random.nextInt(symbols.length)];
+                }
+                return new String(token);
     }
     
     public boolean verifyLogInStatus(int userID, String authToken) {

@@ -23,7 +23,7 @@ import javax.ws.rs.Produces;
  * @author cancola
  */
 @Path("SendLocation/{locationX}/{locationY}/{userID}/{authToken}")
-public class SendLocationAPIcall {
+public class AddNewLocationAPIcall {
 
     @Context
     private UriInfo context;
@@ -31,11 +31,11 @@ public class SendLocationAPIcall {
     /**
      * Creates a new instance of TheFinder
      */
-    public SendLocationAPIcall() {
+    public AddNewLocationAPIcall() {
     }
 
     /**
-     * Retrieves representation of an instance of Finder.SendLocationAPIcall
+     * Retrieves representation of an instance of Finder.AddNewLocationAPIcall
      * @return an instance of java.lang.String
      */
     @GET
@@ -45,14 +45,14 @@ public class SendLocationAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of SendLocationAPIcall
+     * PUT method for updating or creating an instance of AddNewLocationAPIcall
      * @param content representation for the resource
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
     public String putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
         Database db = new Database();
-        if(db.sendLocation(userID, x, y, token)){
+        if(db.addNewLocation(userID, x, y, token)){
             Response response = new Response("OK");
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   

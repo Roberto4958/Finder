@@ -11,15 +11,13 @@ package DataModel;
  */
 public class User {
     public String userName;
-    public String password;
     public String firstName;
     public String lastName;
     public String authToken;
     public int ID;
     
-    public User(String user, String pass, String first, String last, String token, int id){
+    public User(String user, String first, String last, String token, int id){
        userName = user;
-       password = pass;
        firstName = first;
        lastName = last;
        authToken = token;

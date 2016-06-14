@@ -10,14 +10,14 @@ import DataModel.User;
  *
  * @author cancola
  */
-public class UserResponse {
+public class UserResponse extends Response{
     
     public User results;
-    public String status;
     
     public UserResponse(User u, String s){
-        results = u;
-        status = s;
+       
+        super(s);
+        results = u;     
     }
     
 }

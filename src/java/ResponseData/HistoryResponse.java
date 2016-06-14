@@ -11,14 +11,13 @@ import java.util.ArrayList;
  *
  * @author cancola
  */
-public class HistoryResponse {
+public class HistoryResponse extends Response{
     
     public ArrayList<Location> result;
-    public String status;
     
     public HistoryResponse(ArrayList<Location> l, String s){
         
-        result = l;
-        status = s;       
+        super(s);
+        result = l;      
     }
 }
