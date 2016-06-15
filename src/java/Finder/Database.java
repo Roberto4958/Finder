@@ -18,20 +18,30 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
-
 /**
  *
  * @author cancola
  */
 public class Database {
-
-    private static final String connString = "jdbc:mysql://localhost:3306/Finder"; // MySQL database
-    private static final String username = "root"; // MySQL username
-    private static final String password = "root"; // MySQL password
+    
+    private String connString = "jdbc:mysql://"; //localhost:3306/TheFinder
+    
+    private String hostname = "";
+    private String port = "";
+    private String databaseName = "";
+    private String username = ""; // MySQL username
+    private String password = ""; // MySQL password
 
     public Database() {
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
+            hostname = System.getProperty("RDS_HOSTNAME");
+            port = System.getProperty("RDS_PORT");
+            databaseName = System.getProperty("RDS_DB_NAME");
+            username = System.getProperty("RDS_USERNAME");
+            password = System.getProperty("RDS_PASSWORD");           
+            connString = connString + hostname + ":" + port + "/" + databaseName;
+            
         } catch (Exception e) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date currentTime = new Date();
@@ -41,6 +51,7 @@ public class Database {
     }
 
     private Connection getConnection() throws SQLException {
+        
         return DriverManager.getConnection(connString, username, password);
     }
 
