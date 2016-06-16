@@ -33,25 +33,18 @@ public class Database {
     private String password = ""; // MySQL password
 
     public Database() {
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
             hostname = System.getProperty("RDS_HOSTNAME");
             port = System.getProperty("RDS_PORT");
             databaseName = System.getProperty("RDS_DB_NAME");
             username = System.getProperty("RDS_USERNAME");
             password = System.getProperty("RDS_PASSWORD");           
-            connString = connString + hostname + ":" + port + "/" + databaseName;
-            
-        } catch (Exception e) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date currentTime = new Date();
-            System.out.println(dateFormat.format(currentTime) + " : " + "Error connecting to database:");
-            System.out.println(e.getMessage());
-        }
+            connString = connString + hostname + ":" + port + "/" + databaseName;                 
     }
 
     private Connection getConnection() throws SQLException {
-        
+        System.out.println("connString: "+connString);
+        System.out.println("username: "+username);
+        System.out.println("password: "+password);
         return DriverManager.getConnection(connString, username, password);
     }
 
@@ -349,7 +342,7 @@ public class Database {
         Connection conn = null;
         try {
             conn = getConnection();
-
+            System.out.println("Connected successfully");
             String select = "insert into Users(userName, password, firstName, lastName, authToken) values(?, ?, ?, ?, ?);";
             PreparedStatement selectStmt = null;
 
@@ -374,6 +367,7 @@ public class Database {
                 }
             }
         } catch (SQLException e) {
+            System.out.println("Could not connected");
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date currentTime = new Date();
             System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
