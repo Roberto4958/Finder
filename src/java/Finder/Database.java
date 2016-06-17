@@ -33,12 +33,21 @@ public class Database {
     private String password = ""; // MySQL password
 
     public Database() {
+        try{
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        }
+        catch(Exception e){
+              DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+              Date currentTime = new Date();
+              System.out.println(dateFormat.format(currentTime) + " : " + "Error connecting to database:");
+              System.out.println(e.getMessage());      
+        }
             hostname = System.getProperty("RDS_HOSTNAME");
             port = System.getProperty("RDS_PORT");
             databaseName = System.getProperty("RDS_DB_NAME");
             username = System.getProperty("RDS_USERNAME");
             password = System.getProperty("RDS_PASSWORD");           
-            connString = connString + hostname + ":" + port + "/" + databaseName;                 
+            connString = connString + hostname + ":" + port + "/" + databaseName;
     }
 
     private Connection getConnection() throws SQLException {
