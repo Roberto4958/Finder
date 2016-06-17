@@ -351,7 +351,6 @@ public class Database {
         Connection conn = null;
         try {
             conn = getConnection();
-            System.out.println("Connected successfully");
             String select = "insert into Users(userName, password, firstName, lastName, authToken) values(?, ?, ?, ?, ?);";
             PreparedStatement selectStmt = null;
 
@@ -376,7 +375,6 @@ public class Database {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Could not connected");
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             Date currentTime = new Date();
             System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
