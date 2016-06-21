@@ -41,7 +41,6 @@ public class DeleteLocationAPIcall {
     @GET
     @Produces("application/json")
     public String getJson() {
-        //TODO return proper representation object
         throw new UnsupportedOperationException();
     }
 

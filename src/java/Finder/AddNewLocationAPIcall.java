@@ -22,7 +22,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("SendLocation/{locationX}/{locationY}/{userID}/{authToken}")
+@Path("addNewLocation/{locationX}/{locationY}/{userID}/{authToken}")
 public class AddNewLocationAPIcall {
 
     @Context

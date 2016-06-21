@@ -22,7 +22,7 @@ import javax.ws.rs.POST;
  *
  * @author cancola
  */
-@Path("logout/{userID}/{authToken}")
+@Path("logOut/{userID}/{authToken}")
 public class LogoutAPIcall {
 
     @Context
@@ -41,7 +41,7 @@ public class LogoutAPIcall {
     @GET
     @Produces("application/json")
     public String getJson() {
-        return "You have succesfully loged out";
+        throw new UnsupportedOperationException();
     }
 
     /**

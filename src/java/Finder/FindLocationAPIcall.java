@@ -22,7 +22,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("findlocation/{userID}/{authToken}")
+@Path("findLocation/{userID}/{authToken}")
 public class FindLocationAPIcall {
 
     @Context

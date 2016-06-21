@@ -24,8 +24,7 @@ import java.util.Random;
  */
 public class Database {
     
-    private String connString = "jdbc:mysql://"; //localhost:3306/TheFinder
-    
+    private String connString = "jdbc:mysql://"; //localhost:3306/TheFinder    
     private String hostname = "";
     private String port = "";
     private String databaseName = "";
@@ -34,17 +33,17 @@ public class Database {
 
     public Database() {
         try{
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
         }
         catch(Exception e){
-              DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-              Date currentTime = new Date();
-              System.out.println(dateFormat.format(currentTime) + " : " + "Error connecting to database:");
-              System.out.println(e.getMessage());      
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentTime = new Date();
+            System.out.println(dateFormat.format(currentTime) + " : " + "Error connecting to database:");
+            System.out.println(e.getMessage());      
         }
             hostname = System.getProperty("RDS_HOSTNAME");
             port = System.getProperty("RDS_PORT");
-            databaseName = System.getProperty("RDS_DB_NAME");
+            databaseName = System.getProperty("RDS_FINDER_DB_NAME");
             username = System.getProperty("RDS_USERNAME");
             password = System.getProperty("RDS_PASSWORD");           
             connString = connString + hostname + ":" + port + "/" + databaseName;
@@ -58,8 +57,7 @@ public class Database {
     }
 
     public String getName(int id) {
-
-        
+       
         Connection conn = null;
         try {
             conn = getConnection();

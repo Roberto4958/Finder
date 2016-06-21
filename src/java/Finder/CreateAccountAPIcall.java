@@ -41,7 +41,6 @@ public class CreateAccountAPIcall {
     @GET
     @Produces("application/json")
     public String getJson() {
-        //TODO return proper representation object
         throw new UnsupportedOperationException();
     }
 
@@ -52,7 +51,7 @@ public class CreateAccountAPIcall {
      */
     @PUT
     public String putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
-        Database db = new Database();
+       Database db = new Database();
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
            UserResponse response = new UserResponse(user, "OK");
