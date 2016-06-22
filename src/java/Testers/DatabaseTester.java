@@ -21,8 +21,8 @@ public class DatabaseTester {
     
     public static void main(String args[]) throws TwitterException
     {
-       // Database db = new Database();
-        //db.LogIn("user1", "");
+       double g = -.439;
+       System.out.println(g);
         
 
     }

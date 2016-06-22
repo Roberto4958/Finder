@@ -106,7 +106,7 @@ public class Database {
         try {
             conn = getConnection();
 
-            String select = "select userName, password, firstName, lastName, ID from Users where userName = ? and password = ?;";
+            String select = "select userName, password, firstName, lastName, ID, authToken from Users where userName = ? and password = ?;";
             PreparedStatement selectStmt = null;
 
             try {
@@ -115,10 +115,8 @@ public class Database {
                 selectStmt.setString(1, userName);
                 selectStmt.setString(2, password);
                 ResultSet rs = selectStmt.executeQuery();
-                if (rs != null && rs.next()) {
-           
-                    user = new User(rs.getString("userName"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));
-                           
+                if (rs != null && rs.next() && rs.getString("authToken").length() == 0) {             
+                    user = new User(rs.getString("userName"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));                           
                 } 
             } finally {
                 if (selectStmt != null) {
@@ -149,14 +147,11 @@ public class Database {
 
     public Location findLocation(int userID, String authToken) {
         
-        if(verifyLogInStatus(userID, authToken)){
-            
-            
+        if(verifyLogInStatus(userID, authToken)){                      
             Location location = null;
             Connection conn = null;
             try {
                 conn = getConnection();
-
                 String select = "select l.latitude, l.longitude, l.ID from Locations l, Users u where u.ID =? and l.userID = u.ID order by l.ID desc limit 1;";
                 PreparedStatement selectStmt = null;
 
@@ -171,7 +166,6 @@ public class Database {
                     if (selectStmt != null) {
                         selectStmt.close();
                     }
-
                 }
             } catch (SQLException e) {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -213,7 +207,6 @@ public class Database {
                     selectStmt.setDouble(1, latitude);
                     selectStmt.setDouble(2, longitude);
                     selectStmt.setInt(3, userID);
-
                     selectStmt.executeUpdate();
                     successful =true;
 
@@ -353,19 +346,17 @@ public class Database {
             PreparedStatement selectStmt = null;
 
             try {
-               String authToken = createRadomString();
-                
+                String authToken = createRadomString();                
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, username);
                 selectStmt.setString(2, pass);
                 selectStmt.setString(3, firstname);
                 selectStmt.setString(4, lastname);
-                selectStmt.setString(5, authToken);
-                
+                selectStmt.setString(5, authToken);                
                 selectStmt.executeUpdate();
                 int newUserID = verifyIfAcountCreated(username, pass);
-                if(newUserID != 0) user = new User(username, firstname, lastname, authToken, newUserID);
-               
+                
+                if(newUserID != 0) user = new User(username, firstname, lastname, authToken, newUserID);            
                 
             } finally {
                 if (selectStmt != null) {
@@ -394,7 +385,7 @@ public class Database {
         return user;
     }
 
-    public boolean verifyDeletion(int locationID) {
+    public boolean checkIfDoesNotExist(int locationID) {
        
         boolean successful = true;
             Connection conn = null;
@@ -443,6 +434,7 @@ public class Database {
         
         boolean succesful =false;
         if(verifyLogInStatus(userID, authToken)){
+            if(checkIfDoesNotExist(locationID))return false;
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -454,10 +446,9 @@ public class Database {
                     selectStmt = conn.prepareStatement(select);
                     selectStmt.setInt(1, locationID);
                     selectStmt.setInt(2,userID);
-
                     selectStmt.executeUpdate();
                     succesful = true;
-                    if(!verifyDeletion(locationID)) succesful = false;
+                    if(!checkIfDoesNotExist(locationID)) succesful = false;
 
                 } finally {
                     if (selectStmt != null) {
