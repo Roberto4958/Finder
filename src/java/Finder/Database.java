@@ -162,6 +162,7 @@ public class Database {
                     if (rs != null && rs.next()) {
                         location = new Location( rs.getDouble("latitude"),rs.getDouble("longitude"), rs.getInt("ID"));
                     }
+                    else location = new Location( 0,0, -1);
                 } finally {
                     if (selectStmt != null) {
                         selectStmt.close();
@@ -434,7 +435,7 @@ public class Database {
         
         boolean succesful =false;
         if(verifyLogInStatus(userID, authToken)){
-            if(checkIfDoesNotExist(locationID))return false;
+           // if(checkIfDoesNotExist(locationID))return false;
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -448,7 +449,7 @@ public class Database {
                     selectStmt.setInt(2,userID);
                     selectStmt.executeUpdate();
                     succesful = true;
-                    if(!checkIfDoesNotExist(locationID)) succesful = false;
+                   // if(!checkIfDoesNotExist(locationID)) succesful = false;
 
                 } finally {
                     if (selectStmt != null) {

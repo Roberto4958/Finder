@@ -45,11 +45,18 @@ public class FindLocationAPIcall {
         Location location = db.findLocation(userID, token);
        
         if(location != null){
+            if(location.locationID == -1){
+                LocationResponse response = new LocationResponse(null, "OK");
+                Gson g = new Gson();
+                String myReturnJSON = g.toJson(response);   
+                return myReturnJSON;
+            } 
             LocationResponse response = new LocationResponse(location, "OK");
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
         }
+        
                 
         else {
             LocationResponse response = new LocationResponse(null, "ERROR");
