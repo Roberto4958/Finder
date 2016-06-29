@@ -22,7 +22,7 @@ import javax.ws.rs.Produces;
  *
  * @author cancola
  */
-@Path("addNewLocation/{locationX}/{locationY}/{userID}/{authToken}")
+@Path("addNewLocation/{place}/{locationX}/{locationY}/{userID}/{authToken}")
 public class AddNewLocationAPIcall {
 
     @Context
@@ -50,9 +50,9 @@ public class AddNewLocationAPIcall {
      * @return an HTTP response with content of the updated or created resource.
      */
     @PUT
-    public String putJson(@PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
+    public String putJson(@PathParam("place") String place, @PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
         Database db = new Database();
-        if(db.addNewLocation(userID, x, y, token)){
+        if(db.addNewLocation(userID, place, x, y, token)){
             Response response = new Response("OK");
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   

@@ -152,7 +152,7 @@ public class Database {
             Connection conn = null;
             try {
                 conn = getConnection();
-                String select = "select l.latitude, l.longitude, l.ID from Locations l, Users u where u.ID =? and l.userID = u.ID order by l.ID desc limit 1;";
+                String select = "select l.place, l.latitude, l.longitude, l.ID from Locations l, Users u where u.ID =? and l.userID = u.ID order by l.ID desc limit 1;";
                 PreparedStatement selectStmt = null;
 
                 try {
@@ -160,9 +160,9 @@ public class Database {
                     selectStmt.setInt(1, userID);
                     ResultSet rs = selectStmt.executeQuery();
                     if (rs != null && rs.next()) {
-                        location = new Location( rs.getDouble("latitude"),rs.getDouble("longitude"), rs.getInt("ID"));
+                        location = new Location(rs.getString("place"), rs.getDouble("latitude"),rs.getDouble("longitude"), rs.getInt("ID"));
                     }
-                    else location = new Location( 0,0, -1);
+                    else location = new Location(null, 0,0, -1);
                 } finally {
                     if (selectStmt != null) {
                         selectStmt.close();
@@ -192,7 +192,7 @@ public class Database {
         else return null;
     }
 
-    public boolean addNewLocation(int userID, double latitude, double longitude, String authToken) {
+    public boolean addNewLocation(int userID, String place, double latitude, double longitude, String authToken) {
        
         boolean successful = false;
         if(verifyLogInStatus(userID, authToken)){
@@ -200,14 +200,15 @@ public class Database {
             try {
                 conn = getConnection();
 
-                String select = "insert into Locations(latitude, longitude, userID)values(?, ?, ?);";
+                String select = "insert into Locations(place, latitude, longitude, userID)values(?, ?, ?, ?);";
                 PreparedStatement selectStmt = null;
 
                 try {
                     selectStmt = conn.prepareStatement(select);
-                    selectStmt.setDouble(1, latitude);
-                    selectStmt.setDouble(2, longitude);
-                    selectStmt.setInt(3, userID);
+                    selectStmt.setString(1, place);
+                    selectStmt.setDouble(2, latitude);
+                    selectStmt.setDouble(3, longitude);
+                    selectStmt.setInt(4, userID);
                     selectStmt.executeUpdate();
                     successful =true;
 
@@ -248,7 +249,7 @@ public class Database {
             try {
                 conn = getConnection();
                 
-                String select = "select ID, latitude, longitude from Locations where userID =?;";
+                String select = "select ID, place, latitude, longitude from Locations where userID =?;";
                 PreparedStatement selectStmt = null;
 
                 try {
@@ -256,11 +257,9 @@ public class Database {
                     selectStmt.setInt(1, userID);
                     ResultSet rs = selectStmt.executeQuery();
                     history = new ArrayList<Location>();
-                    while (rs != null && rs.next()) {
-                        
-                        Location l = new Location(rs.getDouble("latitude"), rs.getDouble("longitude"), rs.getInt("ID"));
-                        history.add(l);
-                               
+                    while (rs != null && rs.next()) {                       
+                        Location l = new Location(rs.getString("place"), rs.getDouble("latitude"), rs.getDouble("longitude"), rs.getInt("ID"));
+                        history.add(l);                       
                     }
                 } finally {
                     if (selectStmt != null) {

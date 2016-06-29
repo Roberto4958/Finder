@@ -14,12 +14,12 @@ public class Location {
     public double latitude;
     public double longtitude;
     public int locationID;
+    public String place;
     
-    public Location(double lat, double longt, int lID){
-        
-    latitude = lat;
-    longtitude = longt;
-    locationID = lID;
-    
+    public Location(String p, double lat, double longt, int lID){      
+        place = p;
+        latitude = lat;
+        longtitude = longt;
+        locationID = lID;   
     }
 }

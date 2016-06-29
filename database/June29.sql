@@ -24,13 +24,14 @@ DROP TABLE IF EXISTS `Locations`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Locations` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `place` varchar(40) NOT NULL,
   `latitude` double NOT NULL,
   `longitude` double NOT NULL,
   `userID` int(11) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `userID` (`userID`),
   CONSTRAINT `Locations_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `Users` (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +40,7 @@ CREATE TABLE `Locations` (
 
 LOCK TABLES `Locations` WRITE;
 /*!40000 ALTER TABLE `Locations` DISABLE KEYS */;
-INSERT INTO `Locations` VALUES (1,135.53,4394,1),(2,135.53,4394,1),(3,135.53,-48.394,1),(4,-13345.53,94839,2),(5,-1353544,98649,1),(6,-135.4244,389,3),(7,45253,2489,3),(8,13543,24085,3),(9,43.34,-335,1);
+INSERT INTO `Locations` VALUES (1,'location1',135,325,1),(2,'location1',5425,5141,1),(3,'location2',2515,-134,1),(4,'location3',251,-134,2),(5,'location4',-245,-134,2),(6,'location5',-251,135,3),(7,'location6',245,2452,1);
 /*!40000 ALTER TABLE `Locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,4 +82,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-21 22:11:01
+-- Dump completed on 2016-06-29 16:13:12
