@@ -50,9 +50,6 @@ public class Database {
     }
 
     private Connection getConnection() throws SQLException {
-        System.out.println("connString: "+connString);
-        System.out.println("username: "+username);
-        System.out.println("password: "+password);
         return DriverManager.getConnection(connString, username, password);
     }
 
@@ -115,7 +112,7 @@ public class Database {
                 selectStmt.setString(1, userName);
                 selectStmt.setString(2, password);
                 ResultSet rs = selectStmt.executeQuery();
-                if (rs != null && rs.next() && rs.getString("authToken").length() == 0) {             
+                if (rs != null && rs.next()) {             
                     user = new User(rs.getString("userName"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));                           
                 } 
             } finally {
