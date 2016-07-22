@@ -186,12 +186,16 @@ public class Database {
             }
             return location;
         }
+        else if(authTokenMismatch(userID)){
+            deleteToken(userID);
+            return new Location(null, 0, 0, -3);
+        }
         else return null;
     }
 
-    public boolean addNewLocation(int userID, String place, double latitude, double longitude, String authToken) {
+    public String addNewLocation(int userID, String place, double latitude, double longitude, String authToken) {
        
-        boolean successful = false;
+        String successful = "ERROR";
         if(verifyLogInStatus(userID, authToken)){
             Connection conn = null;
             try {
@@ -207,7 +211,7 @@ public class Database {
                     selectStmt.setDouble(3, longitude);
                     selectStmt.setInt(4, userID);
                     selectStmt.executeUpdate();
-                    successful =true;
+                    successful ="OK";
 
                 } finally {
                     if (selectStmt != null) {
@@ -235,7 +239,11 @@ public class Database {
             }
             return successful;
         }
-        return false;
+        else if(authTokenMismatch(userID)){
+            deleteToken(userID);
+            return "TOKENCLEARED";
+        }
+       else return "ERROR";
     }
 
     public ArrayList<Location> getHistory(int userID, String authToken) {
@@ -284,6 +292,12 @@ public class Database {
             }
 
             return history;
+        }
+        else if(authTokenMismatch(userID)){
+            deleteToken(userID);
+            ArrayList<Location> collection = new ArrayList<Location>();
+            collection.add(new Location(null, 0, 0, -3));
+            return collection;
         }
         else return null;
     }
@@ -427,9 +441,9 @@ public class Database {
         
     }
     
-    public boolean deleteLocation(int userID, int locationID, String authToken) {
+    public String deleteLocation(int userID, int locationID, String authToken) {
         
-        boolean succesful =false;
+        String succesful ="ERROR";
         if(verifyLogInStatus(userID, authToken)){
            // if(checkIfDoesNotExist(locationID))return false;
             Connection conn = null;
@@ -444,7 +458,7 @@ public class Database {
                     selectStmt.setInt(1, locationID);
                     selectStmt.setInt(2,userID);
                     selectStmt.executeUpdate();
-                    succesful = true;
+                    succesful = "OK";
                    // if(!checkIfDoesNotExist(locationID)) succesful = false;
 
                 } finally {
@@ -473,7 +487,11 @@ public class Database {
             }
             return succesful; 
         }
-        return false;
+        else if(authTokenMismatch(userID)){
+            deleteToken(userID);
+            return "TOKENCLEARED";
+        }
+        return "ERROR";
     }
 
     public String setAuthToken(int UserID) {
@@ -581,9 +599,9 @@ public class Database {
         return success;
     }
     
-    public boolean logout(int userID, String token) {
+    public String logout(int userID, String token) {
 
-        boolean successful = false;
+        String successful = "ERROR";
         if (verifyLogInStatus(userID, token)){
             Connection conn = null;
             try {
@@ -596,7 +614,7 @@ public class Database {
                     selectStmt = conn.prepareStatement(select);
                     selectStmt.setInt(1, userID);
                     selectStmt.executeUpdate();
-                    successful = true;
+                    successful = "OK";
                     
                 } finally {
                     if (selectStmt != null) {
@@ -624,6 +642,96 @@ public class Database {
             }
             return successful;
         }
-        return false;
+        else if(authTokenMismatch(userID)){
+            deleteToken(userID);
+            return "TOKENCLEARED";
+        }
+        return "ERROR";
+    }
+    
+    public boolean authTokenMismatch(int id) {
+       
+       boolean mismatch = false;  
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            String select = "SELECT ID, authToken from Users WHERE ID = ?;";
+            PreparedStatement selectStmt = null;
+
+            try {
+                selectStmt = conn.prepareStatement(select);
+                selectStmt.setInt(1, id);
+                ResultSet rs = selectStmt.executeQuery();
+                if (rs != null && rs.next()) {
+                    if(rs.getInt("ID")== id){
+                        mismatch = true;
+                    }
+                }
+            } finally {
+                if (selectStmt != null) {
+                    selectStmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentTime = new Date();
+            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+            System.out.println(e.getMessage());
+            System.out.println(e.getSQLState());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date currentTime = new Date();
+                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getSQLState());
+                }
+            }
+        }
+        return mismatch;
+    }
+    
+    public void deleteToken(int id) {
+       
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            String select = "UPDATE Users Set authToken = \"\" Where ID = ?;";
+            PreparedStatement selectStmt = null;
+
+            try {
+                selectStmt = conn.prepareStatement(select);
+                selectStmt.setInt(1, id);
+                selectStmt.executeUpdate();
+              
+            } finally {
+                if (selectStmt != null) {
+                    selectStmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentTime = new Date();
+            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+            System.out.println(e.getMessage());
+            System.out.println(e.getSQLState());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date currentTime = new Date();
+                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getSQLState());
+                }
+            }
+        }
     }
 }

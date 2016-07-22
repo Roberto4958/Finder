@@ -52,17 +52,10 @@ public class DeleteLocationAPIcall {
     @DELETE
     public String putJson(@PathParam("userID")int userID, @PathParam("LocationID") int LocationID, @PathParam("authToken")String token) {
         Database db = new Database();
-        if(db.deleteLocation(userID, LocationID, token)){
-            Response response = new Response("OK");
-            Gson g = new Gson();
-            String myReturnJSON = g.toJson(response);   
-            return myReturnJSON;
-        } 
-        else{
-            Response response = new Response("ERROR");
-            Gson g = new Gson();
-            String myReturnJSON = g.toJson(response);   
-            return myReturnJSON;
-        }
+        String status = (db.deleteLocation(userID, LocationID, token));
+        Response response = new Response(status);
+        Gson g = new Gson();
+        String myReturnJSON = g.toJson(response);   
+        return myReturnJSON;
     }
 }

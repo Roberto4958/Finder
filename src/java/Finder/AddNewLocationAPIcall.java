@@ -52,17 +52,10 @@ public class AddNewLocationAPIcall {
     @PUT
     public String putJson(@PathParam("place") String place, @PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
         Database db = new Database();
-        if(db.addNewLocation(userID, place, x, y, token)){
-            Response response = new Response("OK");
-            Gson g = new Gson();
-            String myReturnJSON = g.toJson(response);   
-            return myReturnJSON;
-        } 
-        else{
-            Response response = new Response("ERROR");
-            Gson g = new Gson();
-            String myReturnJSON = g.toJson(response);   
-            return myReturnJSON;
-        }
+        String status = db.addNewLocation(userID, place, x, y, token);
+        Response response = new Response(status);
+        Gson g = new Gson();
+        String myReturnJSON = g.toJson(response);   
+        return myReturnJSON;
     }
 }

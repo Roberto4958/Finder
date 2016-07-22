@@ -50,6 +50,12 @@ public class FindLocationAPIcall {
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   
                 return myReturnJSON;
+            }
+            if(location.locationID == -3){
+                LocationResponse response = new LocationResponse(null, "TOKENCLEARED");
+                Gson g = new Gson();
+                String myReturnJSON = g.toJson(response);   
+                return myReturnJSON;
             } 
             LocationResponse response = new LocationResponse(location, "OK");
             Gson g = new Gson();

@@ -45,13 +45,18 @@ public class GetHistoryAPIcall {
         Database db = new Database();  
         ArrayList<Location> history = db.getHistory(userID, token);
         
-        if(history != null){
-            HistoryResponse response = new HistoryResponse(history, "OK");
+        if(history.size()>0 && history.get(0).locationID == -3){
+            HistoryResponse response = new HistoryResponse(history, "TOKENCLEARED");
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
         }
-            
+        else if(history != null){
+            HistoryResponse response = new HistoryResponse(history, "OK");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }    
         else{
             HistoryResponse response = new HistoryResponse(null, "ERROR");
             Gson g = new Gson();
