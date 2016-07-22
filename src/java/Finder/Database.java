@@ -254,7 +254,7 @@ public class Database {
             try {
                 conn = getConnection();
                 
-                String select = "select ID, place, latitude, longitude from Locations where userID =?;";
+                String select = "select ID, place, latitude, longitude from Locations where userID =? order by ID DESC;";
                 PreparedStatement selectStmt = null;
 
                 try {
