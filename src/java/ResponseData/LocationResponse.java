@@ -12,11 +12,11 @@ import DataModel.Location;
  */
 public class LocationResponse extends Response{
     
-    public Location result;
+    public Location locationInfo;
     
    public LocationResponse(Location l, String s){
         
         super(s);
-        result = l;
+        locationInfo = l;
     }
 }

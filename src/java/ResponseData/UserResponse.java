@@ -12,12 +12,12 @@ import DataModel.User;
  */
 public class UserResponse extends Response{
     
-    public User results;
+    public User userInfo;
     
     public UserResponse(User u, String s){
        
         super(s);
-        results = u;     
+        userInfo = u;     
     }
     
 }
