@@ -59,6 +59,12 @@ public class LogInAPIcall {
         Database db = new Database();   
         User user = db.LogIn(name, pass);
         if( user != null){
+            if(user.ID==-1){
+                UserResponse response = new UserResponse(null,"OK");
+                Gson g = new Gson();
+                String myReturnJSON = g.toJson(response);   
+                return myReturnJSON;  
+            }
             UserResponse response = new UserResponse(user,"OK");
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   

@@ -107,14 +107,14 @@ public class Database {
             PreparedStatement selectStmt = null;
 
             try {
-        
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, userName);
                 selectStmt.setString(2, password);
                 ResultSet rs = selectStmt.executeQuery();
                 if (rs != null && rs.next()) {             
                     user = new User(rs.getString("userName"), rs.getString("firstName"), rs.getString("lastName"), setAuthToken(rs.getInt("ID")), rs.getInt("ID"));                           
-                } 
+                }
+                else user = new User(null, null, null, null,-1);
             } finally {
                 if (selectStmt != null) {
                     selectStmt.close();
