@@ -302,20 +302,19 @@ public class Database {
         else return null;
     }
     
-    public int verifyIfAcountCreated(String userName, String password) {
+    public int verifyIfAcountExsist(String userName) {
 
         int newUserID = 0;
         Connection conn = null;
         try {
             conn = getConnection();
 
-            String select = "select ID from Users where userName = ? and password =?;";
+            String select = "select ID from Users where userName = ?;";
             PreparedStatement selectStmt = null;
 
             try {
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, userName);
-                selectStmt.setString(2, password);
                 ResultSet rs = selectStmt.executeQuery();
                 if (rs != null && rs.next()) {                   
                     newUserID = rs.getInt("ID");
@@ -349,6 +348,9 @@ public class Database {
     
     public User createAccount(String username, String pass, String firstname, String lastname) {
 
+        if(verifyIfAcountExsist(username) != 0){
+            return new User(null, null, null, null, -1);
+        }
         User user = null;
         Connection conn = null;
         try {
@@ -365,7 +367,7 @@ public class Database {
                 selectStmt.setString(4, lastname);
                 selectStmt.setString(5, authToken);                
                 selectStmt.executeUpdate();
-                int newUserID = verifyIfAcountCreated(username, pass);
+                int newUserID = verifyIfAcountExsist(username);
                 
                 if(newUserID != 0) user = new User(username, firstname, lastname, authToken, newUserID);            
                 

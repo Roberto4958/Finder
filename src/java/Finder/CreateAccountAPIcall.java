@@ -54,10 +54,16 @@ public class CreateAccountAPIcall {
        Database db = new Database();
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
+            if(user.ID == -1){
+                UserResponse response = new UserResponse(null, "OK");
+                Gson g = new Gson();
+                String myReturnJSON = g.toJson(response);   
+                return myReturnJSON; 
+           }
            UserResponse response = new UserResponse(user, "OK");
-            Gson g = new Gson();
-            String myReturnJSON = g.toJson(response);   
-            return myReturnJSON;
+           Gson g = new Gson();
+           String myReturnJSON = g.toJson(response);   
+           return myReturnJSON;
        }
        else{
             UserResponse response = new UserResponse(null, "ERROR");
