@@ -7,6 +7,10 @@ package Finder;
 
 import com.google.gson.Gson;
 import ResponseData.Response;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -51,11 +55,20 @@ public class AddNewLocationAPIcall {
      */
     @PUT
     public String putJson(@PathParam("place") String place, @PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {
-        Database db = new Database();
-        String status = db.addNewLocation(userID, place, x, y, token);
-        Response response = new Response(status);
-        Gson g = new Gson();
-        String myReturnJSON = g.toJson(response);   
-        return myReturnJSON;
+        try {
+            Database db = new Database();
+            place = URLDecoder.decode(place.toString(),"UTF-8");
+            String status = db.addNewLocation(userID, place, x, y, token);
+            Response response = new Response(status);
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);
+            return myReturnJSON;
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(AddNewLocationAPIcall.class.getName()).log(Level.SEVERE, null, ex);
+            Response response = new Response("ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);
+            return myReturnJSON;
+        }
     }
 }

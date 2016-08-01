@@ -8,7 +8,11 @@ package Finder;
 import ResponseData.UserResponse;
 import com.google.gson.Gson;
 import DataModel.User;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -57,8 +61,20 @@ public class LogInAPIcall {
     public String putJson(@PathParam("username") String name, @PathParam("password") String pass) {
        
         Database db = new Database();   
+        try {
+            name = URLDecoder.decode(name.toString(),"UTF-8");
+            pass = URLDecoder.decode(pass.toString(),"UTF-8");
+        } 
+        catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(LogInAPIcall.class.getName()).log(Level.SEVERE, null, ex);
+            UserResponse response = new UserResponse(null,"ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;
+        }
+        
         User user = db.LogIn(name, pass);
-        if( user != null){
+        if(user != null){
             if(user.ID==-1){
                 UserResponse response = new UserResponse(null,"OK");
                 Gson g = new Gson();

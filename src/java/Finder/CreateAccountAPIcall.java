@@ -8,6 +8,10 @@ package Finder;
 import ResponseData.UserResponse;
 import DataModel.User;
 import com.google.gson.Gson;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
@@ -52,6 +56,18 @@ public class CreateAccountAPIcall {
     @PUT
     public String putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
        Database db = new Database();
+       try {
+            username = URLDecoder.decode(username.toString(),"UTF-8");
+            pass = URLDecoder.decode(pass.toString(),"UTF-8");
+            firstname = URLDecoder.decode(firstname.toString(),"UTF-8");
+            lastname = URLDecoder.decode(lastname.toString(),"UTF-8");
+       }
+       catch (UnsupportedEncodingException ex) {
+            UserResponse response = new UserResponse(null, "ERROR");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON; 
+       }
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
             if(user.ID == -1){
@@ -59,11 +75,11 @@ public class CreateAccountAPIcall {
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   
                 return myReturnJSON; 
-           }
-           UserResponse response = new UserResponse(user, "OK");
-           Gson g = new Gson();
-           String myReturnJSON = g.toJson(response);   
-           return myReturnJSON;
+           } 
+            UserResponse response = new UserResponse(user, "OK");
+            Gson g = new Gson();
+            String myReturnJSON = g.toJson(response);   
+            return myReturnJSON;           
        }
        else{
             UserResponse response = new UserResponse(null, "ERROR");
