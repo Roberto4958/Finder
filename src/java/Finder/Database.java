@@ -48,55 +48,18 @@ public class Database {
             password = System.getProperty("RDS_PASSWORD");           
             connString = connString + hostname + ":" + port + "/" + databaseName;
     }
-
+    
+    //@desc: makes a connection with the database
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(connString, username, password);
     }
-
-    public String getName(int id) {
-       
-        Connection conn = null;
-        try {
-            conn = getConnection();
-
-            String select = "select a.firstName, b.Score from Users a, Scores b where b.userID = a.idnew_table and a.idnew_table = ?;";
-            PreparedStatement selectStmt = null;
-
-            try {
-                selectStmt = conn.prepareStatement(select);
-                selectStmt.setInt(1, id);
-                ResultSet rs = selectStmt.executeQuery();
-                if (rs != null && rs.next()) {
-                    
-                    System.out.println(rs.getString("firstName") + " Score is: " + rs.getString("Score"));
-                }
-            } finally {
-                if (selectStmt != null) {
-                    selectStmt.close();
-                }
-            }
-        } catch (SQLException e) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-            Date currentTime = new Date();
-            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
-            System.out.println(e.getMessage());
-            System.out.println(e.getSQLState());
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date currentTime = new Date();
-                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
-                    System.out.println(e.getMessage());
-                    System.out.println(e.getSQLState());
-                }
-            }
-        }
-        return null;
-    }
-
+    
+    /**
+     * @desc: Logs in user
+     * @param: userName - users userName, password - users password
+     * @returns: If both user name and password are correct returns user object. 
+     * If username or password do not match to a user returns a user with null values and a id of of -1
+     */
     public User LogIn(String userName, String password) {
         User user = null;
         Connection conn = null;
@@ -142,9 +105,16 @@ public class Database {
         return user;
     }
 
+    /**
+     * @desc: Finds users last location
+     * @param: userID - users ID, authToken - users authentication token
+     * @return: If everything goes well this returns users last location object.
+     * If user does not have any locations it returns a null location object with id = -1.
+     * If the authToken does not match the ID it returns a null location object with id = -3
+     */
     public Location findLocation(int userID, String authToken) {
         
-        if(verifyLogInStatus(userID, authToken)){                      
+        if(checkIfMatchToUser(userID, authToken)){                      
             Location location = null;
             Connection conn = null;
             try {
@@ -186,17 +156,24 @@ public class Database {
             }
             return location;
         }
-        else if(authTokenMismatch(userID)){
+        else if(userWithIDExist(userID)){
             deleteToken(userID);
             return new Location(null, 0, 0, -3);
         }
         else return null;
     }
 
+    /**
+     * @desc: Adds users location to the database
+     * @param: userID - users ID, place - locations name, latitude - users latitude, longitude - users longitude, authToken - users authentication token
+     * @return: If the location is added to the database then it returns "OK"
+     * If the authTeoken does not match the id then it returns "TOKENCLEARED"
+     * else it returns "ERROR"
+     */
     public String addNewLocation(int userID, String place, double latitude, double longitude, String authToken) {
        
         String successful = "ERROR";
-        if(verifyLogInStatus(userID, authToken)){
+        if(checkIfMatchToUser(userID, authToken)){
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -239,16 +216,23 @@ public class Database {
             }
             return successful;
         }
-        else if(authTokenMismatch(userID)){
+        else if(userWithIDExist(userID)){
             deleteToken(userID);
             return "TOKENCLEARED";
         }
        else return "ERROR";
     }
 
+    /**
+     * @desc: Gets all of users locations 
+     * @param: userID - user ID, authToken - users authentication token
+     * @return: If all conditions are met returns a ArrayList of location objects
+     * If authtoken does not match ID the it returns a ArrayList with only one location object with the ID of -3
+     * If something goes wrong trying to get the Locations then it returns null
+     */
     public ArrayList<Location> getHistory(int userID, String authToken) {
         
-        if(verifyLogInStatus(userID, authToken)){
+        if(checkIfMatchToUser(userID, authToken)){
             ArrayList<Location> history = null;
             Connection conn = null;
             try {
@@ -293,7 +277,7 @@ public class Database {
 
             return history;
         }
-        else if(authTokenMismatch(userID)){
+        else if(userWithIDExist(userID)){
             deleteToken(userID);
             ArrayList<Location> collection = new ArrayList<Location>();
             collection.add(new Location(null, 0, 0, -3));
@@ -302,7 +286,13 @@ public class Database {
         else return null;
     }
     
-    public int verifyIfAcountExsist(String userName) {
+    /**
+     * @desc: checks if there is already a account with the username. 
+     * @param: userName - users name
+     * @return: If there is a account that already exist then it returns the ID of user.
+     * If the account does not exist then it return 0.
+     */
+    private int verifyIfAcountExsist(String userName) {
 
         int newUserID = 0;
         Connection conn = null;
@@ -346,6 +336,13 @@ public class Database {
         return newUserID;
     }
     
+    /**
+     * @desc: Creates a account and stores it in the database.
+     * @param: username - users userName, pass - users password, firstname - users first name, lastname - users last name
+     * @return: If users account is stored to the database successfully then it returns a user object.
+     * If there is already a user with the same userName of username then it returns a user object with null values and id = -1
+     * If something goes wrong trying to put the users account to the database it returns null.
+     */
     public User createAccount(String username, String pass, String firstname, String lastname) {
 
         if(verifyIfAcountExsist(username) != 0){
@@ -397,57 +394,18 @@ public class Database {
         }
         return user;
     }
-
-    public boolean checkIfDoesNotExist(int locationID) {
-       
-        boolean successful = true;
-            Connection conn = null;
-            try {
-                conn = getConnection();
-
-                String select = "select ID from Locations where ID = ?;";
-                PreparedStatement selectStmt = null;
-
-                try {
-                    selectStmt = conn.prepareStatement(select);
-                    selectStmt.setDouble(1, locationID);
-                    ResultSet rs = selectStmt.executeQuery();
-                if (rs != null && rs.next()) {
-                    successful = false;
-                }
-                } finally {
-                    if (selectStmt != null) {
-                        selectStmt.close();
-                    }
-                }
-            } catch (SQLException e) {
-                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                Date currentTime = new Date();
-                System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
-                System.out.println(e.getMessage());
-                System.out.println(e.getSQLState());
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                        Date currentTime = new Date();
-                        System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
-                        System.out.println(e.getMessage());
-                        System.out.println(e.getSQLState());
-                    }
-                }
-            }
-            return successful;
-        
-    }
     
+    /**
+     * @desc: Deletes users location
+     * @param: userID - users ID, locationID - location id that user whats to delete, authToken - users authentication Token
+     * @return: If users location is deleted it returns "OK"
+     * If authToken does not match userID then returns "TOKENCLEARED"
+     * If something goes wrong trying to delete location it returns "ERROR". 
+     */
     public String deleteLocation(int userID, int locationID, String authToken) {
         
         String succesful ="ERROR";
-        if(verifyLogInStatus(userID, authToken)){
-           // if(checkIfDoesNotExist(locationID))return false;
+        if(checkIfMatchToUser(userID, authToken)){
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -461,7 +419,6 @@ public class Database {
                     selectStmt.setInt(2,userID);
                     selectStmt.executeUpdate();
                     succesful = "OK";
-                   // if(!checkIfDoesNotExist(locationID)) succesful = false;
 
                 } finally {
                     if (selectStmt != null) {
@@ -489,14 +446,20 @@ public class Database {
             }
             return succesful; 
         }
-        else if(authTokenMismatch(userID)){
+        else if(userWithIDExist(userID)){
             deleteToken(userID);
             return "TOKENCLEARED";
         }
         return "ERROR";
     }
 
-    public String setAuthToken(int UserID) {
+    /**
+     * @desc: Sets a authentication token for the user and updates the database to have the token. 
+     * @param UserID - users ID
+     * @return If successfully updates the database to have the token then it returns token.
+     * If not successful in updating the database then returns null. 
+     */
+    private String setAuthToken(int UserID) {
 
         String RandomToken = null;
         Connection conn = null;
@@ -540,6 +503,10 @@ public class Database {
         return RandomToken;
     }
     
+    /**
+     * @desc: Constructs a string of random 30 characters. The String only has numbers and letters.  
+     * @return: A random String
+     */
     private String createRadomString(){
                 //start building a random token
                 StringBuilder tmp = new StringBuilder();
@@ -556,7 +523,12 @@ public class Database {
                 return new String(token);
     }
     
-    public boolean verifyLogInStatus(int userID, String authToken) {
+    /**
+     * @desc: Checks if userID and AuthToken match to a user 
+     * @param: userID - users ID, authToken - users authentication token
+     * @return: If userID and AuthToken match to a user returns true and if they do not it returns false
+     */
+    private boolean checkIfMatchToUser(int userID, String authToken) {
 
         boolean success = false;
         Connection conn = null;
@@ -601,10 +573,17 @@ public class Database {
         return success;
     }
     
-    public String logout(int userID, String token) {
+    /**
+     * @desc: Logs out the user by clearing their authentication token.
+     * @param: userID, AuthToken - users authentication token
+     * @return: If token is cleared it returns "OK"
+     * If AuthToken and userID do not match it returns "TOKENCLEARED"
+     * If something goes wrong trying to delete token it returns "ERROR"
+     */
+    public String logout(int userID, String AuthToken) {
 
         String successful = "ERROR";
-        if (verifyLogInStatus(userID, token)){
+        if (checkIfMatchToUser(userID, AuthToken)){
             Connection conn = null;
             try {
                 conn = getConnection();
@@ -644,16 +623,21 @@ public class Database {
             }
             return successful;
         }
-        else if(authTokenMismatch(userID)){
+        else if(userWithIDExist(userID)){
             deleteToken(userID);
             return "TOKENCLEARED";
         }
         return "ERROR";
     }
     
-    public boolean authTokenMismatch(int id) {
+    /**
+     * @desc: Checks if user with the ID of userID exist 
+     * @param: userID - users id
+     * @return: If the user exist then it returns true, and if the user does not exist it return false
+     */
+    private boolean userWithIDExist(int userID) {
        
-       boolean mismatch = false;  
+       boolean exist = false;  
         Connection conn = null;
         try {
             conn = getConnection();
@@ -663,11 +647,11 @@ public class Database {
 
             try {
                 selectStmt = conn.prepareStatement(select);
-                selectStmt.setInt(1, id);
+                selectStmt.setInt(1, userID);
                 ResultSet rs = selectStmt.executeQuery();
                 if (rs != null && rs.next()) {
-                    if(rs.getInt("ID")== id){
-                        mismatch = true;
+                    if(rs.getInt("ID")== userID){
+                        exist = true;
                     }
                 }
             } finally {
@@ -694,10 +678,14 @@ public class Database {
                 }
             }
         }
-        return mismatch;
+        return exist;
     }
     
-    public void deleteToken(int id) {
+    /**
+     * @desc: Clears users authToken from the database.
+     * @param userID - users id
+     */
+    private void deleteToken(int userID) {
        
         Connection conn = null;
         try {
@@ -708,7 +696,7 @@ public class Database {
 
             try {
                 selectStmt = conn.prepareStatement(select);
-                selectStmt.setInt(1, id);
+                selectStmt.setInt(1, userID);
                 selectStmt.executeUpdate();
               
             } finally {
