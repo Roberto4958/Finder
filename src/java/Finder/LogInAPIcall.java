@@ -26,8 +26,10 @@ import javax.ws.rs.POST;
 
 /**
  * REST Web Service
- *
- * @author cancola
+ * LogInAPIcall is responsible for handling logIn API call.
+ * Has a POST request that handles modifying users authentication token 
+ * 
+ * @author Roberto Aguilar
  */
 @Path("logIn/{username}/{password}")
 public class LogInAPIcall {
@@ -53,9 +55,9 @@ public class LogInAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of LogInAPIcall
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * PUT method for logging in the user by modifying authentication token
+     * @param name - users username, pass - users password
+     * @return an JSON object of USerResponse
      */
     @POST
     public String putJson(@PathParam("username") String name, @PathParam("password") String pass) {
@@ -75,7 +77,7 @@ public class LogInAPIcall {
         
         User user = db.LogIn(name, pass);
         if(user != null){
-            if(user.ID==-1){
+            if(user.ID==-1){ // if userName and password do not match to a user
                 UserResponse response = new UserResponse(null,"OK");
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   

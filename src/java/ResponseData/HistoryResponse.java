@@ -8,8 +8,10 @@ package ResponseData;
 import DataModel.Location;
 import java.util.ArrayList;
 /**
+ * HistoryResponse is responsible for holding the http request status and hold a ArrayList of Location.
+ * This class gets converted to a JSON string and gets sent when a history API call is made.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 public class HistoryResponse extends Response{
     

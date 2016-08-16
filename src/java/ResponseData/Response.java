@@ -8,8 +8,10 @@ package ResponseData;
 import DataModel.Location;
 import DataModel.User;
 /**
- *
- * @author cancola
+ * Response is responsible for holding the http request status.  
+ * This class gets converted to a JSON string and gets sent when a API call is made.
+ * 
+ * @author Roberto Aguilar
  */
 public class Response {
    

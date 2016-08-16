@@ -6,8 +6,9 @@
 package DataModel;
 
 /**
+ * User is responsible for holding all the attributes for a user. 
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 public class User {
     public String userName;
@@ -23,5 +24,4 @@ public class User {
        authToken = token;
        ID = id;    
     }
-    
 }

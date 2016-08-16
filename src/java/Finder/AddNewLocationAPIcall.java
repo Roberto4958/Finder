@@ -23,8 +23,10 @@ import javax.ws.rs.Produces;
 
 /**
  * REST Web Service
+ * This class is responsible for handling addNewLocation API call. 
+ * Has a PUT method handling adding locations.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 @Path("addNewLocation/{place}/{locationX}/{locationY}/{userID}/{authToken}")
 public class AddNewLocationAPIcall {
@@ -49,9 +51,9 @@ public class AddNewLocationAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of AddNewLocationAPIcall
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * PUT method for adding a new location to the database
+     * @param place - name of users location, x - users latitude, y - users longitude, userID - users id, token - users authentication Token
+     * @return an JSON response of a Response object with the status of value "OK", "TOKENCLEARED", or "ERROR"
      */
     @PUT
     public String putJson(@PathParam("place") String place, @PathParam("locationX") double x, @PathParam("locationY") double y, @PathParam("userID") int userID, @PathParam("authToken")String token ) {

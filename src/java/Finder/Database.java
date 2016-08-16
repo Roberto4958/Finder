@@ -19,8 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 /**
- *
- * @author cancola
+ * This class is responsible for creating a database connection and modifying the database based on the request.
+ * 
+ * @author Roberto Aguilar
  */
 public class Database {
     

@@ -6,8 +6,9 @@
 package DataModel;
 
 /**
+ * Location is responsible for holding all of the attributes of a location.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 public class Location {
     

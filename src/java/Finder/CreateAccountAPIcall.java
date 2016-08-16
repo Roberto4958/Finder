@@ -23,8 +23,10 @@ import javax.ws.rs.Produces;
 
 /**
  * REST Web Service
- *
- * @author cancola
+ * This class is responsible for handling createAccount API call.
+ * Has a PUT method handling creating a new account.  
+ * 
+ * @author Roberto Aguilar
  */
 @Path("createAccount/{userName}/{password}/{firstName}/{lastName}")
 public class CreateAccountAPIcall {
@@ -49,9 +51,9 @@ public class CreateAccountAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of CreateAccountAPIcall
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * @desc: PUT method for creating a new account based on the URI values give
+     * @param username - users username, pass - users password, firstname - users first name, lastname - users last name
+     * @return an JSON object of userResponse. 
      */
     @PUT
     public String putJson(@PathParam("userName")String username, @PathParam("password")String pass, @PathParam("firstName") String firstname, @PathParam("lastName") String lastname) {
@@ -70,7 +72,7 @@ public class CreateAccountAPIcall {
        }
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
-            if(user.ID == -1){
+            if(user.ID == -1){ // if userName already exist 
                 UserResponse response = new UserResponse(null, "OK");
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   

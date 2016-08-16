@@ -7,8 +7,10 @@ package ResponseData;
 
 import DataModel.User;
 /**
+ * UserResponse is responsible for holding the http request status, and a User object.
+ * This class gets converted to a JSON string and gets sent when a API call is made.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 public class UserResponse extends Response{
     

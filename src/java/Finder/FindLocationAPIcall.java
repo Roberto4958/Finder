@@ -19,8 +19,10 @@ import javax.ws.rs.Produces;
 
 /**
  * REST Web Service
+ * FindLocationAPIcall is responsible for findLocation API call.
+ * Has a GET method that handles getting location from the database.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 @Path("findLocation/{userID}/{authToken}")
 public class FindLocationAPIcall {
@@ -35,8 +37,9 @@ public class FindLocationAPIcall {
     }
 
     /**
-     * Retrieves representation of an instance of Finder.FindLocationAPIcall
-     * @return an instance of java.lang.String
+     * GET method that handles getting the last location of user from database.
+     * @param userID - users ID, token - users authentication token
+     * @return an JSON LocationResponse object
      */
     @GET
     @Produces("application/json")
@@ -44,14 +47,14 @@ public class FindLocationAPIcall {
         Database db  = new Database();
         Location location = db.findLocation(userID, token);
        
-        if(location != null){
+        if(location != null){ // if there are no locations in the database
             if(location.locationID == -1){
                 LocationResponse response = new LocationResponse(null, "OK");
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   
                 return myReturnJSON;
             }
-            if(location.locationID == -3){
+            if(location.locationID == -3){ // if authToken and useID do not match to a row
                 LocationResponse response = new LocationResponse(null, "TOKENCLEARED");
                 Gson g = new Gson();
                 String myReturnJSON = g.toJson(response);   

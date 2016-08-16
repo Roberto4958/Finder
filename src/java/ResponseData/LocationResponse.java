@@ -7,15 +7,16 @@ package ResponseData;
 
 import DataModel.Location;
 /**
+ * LocationResponse is responsible for holding the http request status and a Location object.
+ * This class gets converted to a JSON string and gets sent when a API call is made. 
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 public class LocationResponse extends Response{
     
     public Location locationInfo;
     
    public LocationResponse(Location l, String s){
-        
         super(s);
         locationInfo = l;
     }

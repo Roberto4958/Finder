@@ -20,8 +20,10 @@ import javax.ws.rs.Produces;
 
 /**
  * REST Web Service
- *
- * @author cancola
+ * GetHistoryAPIcall handles API calls from history.
+ * Has a GET request that handles getting all the locations of user
+ * 
+ * @author Roberto Aguilar
  */
 @Path("history/{userID}/{authToken}")
 public class GetHistoryAPIcall {
@@ -36,8 +38,9 @@ public class GetHistoryAPIcall {
     }
 
     /**
-     * Retrieves representation of an instance of Finder.GetHistoryAPIcall
-     * @return an instance of java.lang.String
+     * GET method that handles getting a ArrayList of users Location
+     * @param userID - users id, token - users authentication token
+     * @return an JSON HistoryResponse object
      */
     @GET
     @Produces("application/json")

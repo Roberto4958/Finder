@@ -19,8 +19,10 @@ import javax.ws.rs.POST;
 
 /**
  * REST Web Service
+ * LogoutAPIcall is responsible for handling the logOut API call.
+ * Has a POST method that logs out user by modifying authentication token.
  *
- * @author cancola
+ * @author Roberto Aguilar
  */
 @Path("logOut/{userID}/{authToken}")
 public class LogoutAPIcall {
@@ -45,9 +47,9 @@ public class LogoutAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of LogoutAPIcall
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * PUT method for logging out user by modifying users authentication token
+     * @param userID - users id, token - users authentication token
+     * @return an JSON Response object.
      */
     @POST
     public String putJson(@PathParam("userID")int userID, @PathParam("authToken") String token) {
@@ -57,6 +59,5 @@ public class LogoutAPIcall {
         Gson g = new Gson();
         String myReturnJSON = g.toJson(response);   
         return myReturnJSON;
-        
     }
 }

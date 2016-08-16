@@ -19,6 +19,8 @@ import javax.ws.rs.DELETE;
 
 /**
  * REST Web Service
+ * DeleteLocationAPIcall is responsible for handling deleteLocation aPI call
+ * Has a DELETE method that handles deleting a location.
  *
  * @author cancola
  */
@@ -45,9 +47,9 @@ public class DeleteLocationAPIcall {
     }
 
     /**
-     * PUT method for updating or creating an instance of DeleteLocationAPIcall
-     * @param content representation for the resource
-     * @return an HTTP response with content of the updated or created resource.
+     * DELETE method for for deleting a Location from the database
+     * @param userID - users id, LocationID - the location id of location that user wants to delete, token - users authentication token
+     * @return an JSON Response object with the status value of "OK", "TOKENCLEARED", or "ERROR".
      */
     @DELETE
     public String putJson(@PathParam("userID")int userID, @PathParam("LocationID") int LocationID, @PathParam("authToken")String token) {
