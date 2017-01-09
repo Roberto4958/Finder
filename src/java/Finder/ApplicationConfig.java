@@ -34,6 +34,7 @@ public class ApplicationConfig extends Application {
         resources.add(Finder.DeleteLocationAPIcall.class);
         resources.add(Finder.FindLocationAPIcall.class);
         resources.add(Finder.GetHistoryAPIcall.class);
+        resources.add(Finder.HashALLPasswords.class);
         resources.add(Finder.LogInAPIcall.class);
         resources.add(Finder.LogoutAPIcall.class);
     }

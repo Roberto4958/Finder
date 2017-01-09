@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import DataModel.User;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +56,21 @@ public class LogInAPIcall {
         return null;
     }
 
+    private String hashPassword(String pass){
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            md.update(pass.getBytes());
+            byte[] b = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for(byte b1: b){
+		sb.append(Integer.toHexString(b1 & 0Xff).toString());
+            }
+            return sb.toString();
+			
+	} catch (NoSuchAlgorithmException e) {
+            return "Did not work";
+	}
+    }
     /**
      * PUT method for logging in the user by modifying authentication token
      * @param name - users username, pass - users password
@@ -73,9 +90,9 @@ public class LogInAPIcall {
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   
             return myReturnJSON;
-        }
-        
+        }    
         User user = db.LogIn(name, pass);
+ 
         if(user != null){
             if(user.ID==-1){ // if userName and password do not match to a user
                 UserResponse response = new UserResponse(null,"OK");

@@ -7,6 +7,8 @@ package Finder;
 
 import DataModel.Location;
 import DataModel.User;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.util.Date;
 import java.sql.DriverManager;
@@ -64,6 +66,9 @@ public class Database {
     public User LogIn(String userName, String password) {
         User user = null;
         Connection conn = null;
+        String salt = getSalt(userName);
+        password = hashString(password,salt);
+        
         try {
             conn = getConnection();
 
@@ -104,6 +109,56 @@ public class Database {
             }
         }
         return user;
+    }
+    
+    /*
+    * @param: userName: user name of current user
+    * @desc: this method is used to get the password = password+salt
+    * @return: the salt of user
+    */
+    private String getSalt(String userName) {
+
+        String salt = null;
+        Connection conn = null;
+        try {
+            conn = getConnection();
+
+            String select = "select Salt from Users where username = ?;";
+            PreparedStatement selectStmt = null;
+
+            try {
+                selectStmt = conn.prepareStatement(select);
+                selectStmt.setString(1, userName);
+                ResultSet rs = selectStmt.executeQuery();
+                if (rs != null && rs.next()) {                   
+                    salt = rs.getString("Salt");
+                }
+            } finally {
+                if (selectStmt != null) {
+                    selectStmt.close();
+                }
+            }
+        } catch (SQLException e) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            Date currentTime = new Date();
+            System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+            System.out.println(e.getMessage());
+            System.out.println(e.getSQLState());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date currentTime = new Date();
+                    System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getSQLState());
+                }
+            }
+        }
+        System.out.println(salt);
+        return salt;
     }
 
     /**
@@ -346,6 +401,13 @@ public class Database {
      */
     public User createAccount(String username, String pass, String firstname, String lastname) {
 
+        
+        String salt = createRadomString(20);
+        System.out.println("pass: "+ pass + ", salt: "+ salt);
+        pass = hashString(pass, salt);
+
+        if(pass == null) return null;
+                
         if(verifyIfAcountExsist(username) != 0){
             return new User(null, null, null, null, -1);
         }
@@ -353,17 +415,18 @@ public class Database {
         Connection conn = null;
         try {
             conn = getConnection();
-            String select = "insert into Users(userName, password, firstName, lastName, authToken) values(?, ?, ?, ?, ?);";
+            String select = "insert into Users(userName, password, firstName, lastName, authToken, Salt) values(?, ?, ?, ?, ?, ?);";
             PreparedStatement selectStmt = null;
 
             try {
-                String authToken = createRadomString();                
+                String authToken = createRadomString(30);                
                 selectStmt = conn.prepareStatement(select);
                 selectStmt.setString(1, username);
                 selectStmt.setString(2, pass);
                 selectStmt.setString(3, firstname);
                 selectStmt.setString(4, lastname);
-                selectStmt.setString(5, authToken);                
+                selectStmt.setString(5, authToken);  
+                selectStmt.setString(6, salt);
                 selectStmt.executeUpdate();
                 int newUserID = verifyIfAcountExsist(username);
                 
@@ -471,7 +534,7 @@ public class Database {
             PreparedStatement selectStmt = null;
 
             try {
-                RandomToken = createRadomString();
+                RandomToken = createRadomString(30);
                 selectStmt = conn.prepareStatement(select);                           
                 selectStmt.setString(1,RandomToken);
                 selectStmt.setInt(2, UserID);
@@ -508,7 +571,7 @@ public class Database {
      * @desc: Constructs a string of random 30 characters. The String only has numbers and letters.  
      * @return: A random String
      */
-    private String createRadomString(){
+    private String createRadomString(int length){
                 //start building a random token
                 StringBuilder tmp = new StringBuilder();
                 for (char ch = '0'; ch <= '9'; ++ch)
@@ -516,7 +579,7 @@ public class Database {
                 for (char ch = 'a'; ch <= 'z'; ++ch)
                     tmp.append(ch);
                 char[] symbols = tmp.toString().toCharArray();
-                char[] token = new char[30];
+                char[] token = new char[length];
                 Random  random  = new Random();
                 for(int i=0; i < token.length; i++){
                     token[i] = symbols[random.nextInt(symbols.length)];
@@ -724,5 +787,165 @@ public class Database {
                 }
             }
         }
+    }
+    /*
+    * @desc: hashes all the passwords in the database. This is a temperary method 
+    */
+    public void HashAllPass() {
+        
+            Connection conn = null;
+            try {
+                conn = getConnection();
+                
+                String select = "select id, password from Users;";
+                PreparedStatement selectStmt = null;
+
+                try {
+                    selectStmt = conn.prepareStatement(select);
+                    ResultSet rs = selectStmt.executeQuery();
+                    while (rs != null && rs.next()) {                       
+                        hashPass(rs.getInt("id"), rs.getString("password"));                       
+                    }
+                } finally {
+                    if (selectStmt != null) {
+                        selectStmt.close();
+                    }
+                }
+            } catch (SQLException e) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date currentTime = new Date();
+                System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+                System.out.println(e.getMessage());
+                System.out.println(e.getSQLState());
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date currentTime = new Date();
+                        System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getSQLState());
+                    }
+                }
+            }                
+    }
+    /*
+    *@desc: hashes the password of user that has id of userID
+    */
+    private void hashPass(int userID, String password) {
+
+            String salt = generateSalt(userID); 
+            if(salt == null) return;
+            String hashpass = hashString(password, salt);
+            if(hashpass == null)return;
+            
+            Connection conn = null;
+            try {
+                conn = getConnection();
+
+                String select = "update Users set password = ? where ID = ?;";
+                PreparedStatement selectStmt = null;
+
+                try {
+                    selectStmt = conn.prepareStatement(select);
+                    selectStmt.setInt(2, userID);
+                    selectStmt.setString(1, hashpass);
+                    selectStmt.executeUpdate();
+                    
+                } finally {
+                    if (selectStmt != null) {
+                        selectStmt.close();
+                    }
+                }
+            } catch (SQLException e) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date currentTime = new Date();
+                System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+                System.out.println(e.getMessage());
+                System.out.println(e.getSQLState());
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date currentTime = new Date();
+                        System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getSQLState());
+                    }
+                }
+        }
+    }
+    
+    public String generateSalt(int userID) {
+
+            String salt = createRadomString(20);
+            
+            Connection conn = null;
+            try {
+                conn = getConnection();
+
+                String select = "update Users set Salt = ? where ID = ?;";
+                PreparedStatement selectStmt = null;
+
+                try {
+                    selectStmt = conn.prepareStatement(select);
+                    selectStmt.setInt(2, userID);
+                    selectStmt.setString(1, salt);
+                    selectStmt.executeUpdate();
+                    
+                } finally {
+                    if (selectStmt != null) {
+                        selectStmt.close();
+                    }
+                }
+            } catch (SQLException e) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date currentTime = new Date();
+                System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function in the Database_Driver class. Driver username: " + username);
+                System.out.println(e.getMessage());
+                System.out.println(e.getSQLState());
+                return null;
+            } finally {
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        Date currentTime = new Date();
+                        System.out.println(dateFormat.format(currentTime) + " : " + "SQLException Occurred in the punchIn Function closing connection in the Database_Driver class. Driver username " + username);
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getSQLState());
+                    }
+                }
+        }
+            return salt;
+    }
+    
+    /*
+    * @param: pass - password of user
+    * @param: salt - random generated string of length 20
+    * @return: a hash of pass + salt 
+    */
+    private String hashString(String pass, String salt){
+        
+        try {
+            pass = pass + salt;
+            
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            md.update(pass.getBytes());
+            byte[] b = md.digest();
+            StringBuffer sb = new StringBuffer();
+            for(byte b1: b){
+		sb.append(Integer.toHexString(b1 & 0Xff).toString());
+            }
+            return sb.toString();
+			
+	} catch (NoSuchAlgorithmException e) {
+            return null;
+	}
     }
 }

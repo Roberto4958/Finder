@@ -20,6 +20,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * REST Web Service
@@ -49,6 +51,7 @@ public class CreateAccountAPIcall {
     public String getJson() {
         throw new UnsupportedOperationException();
     }
+    
 
     /**
      * @desc: PUT method for creating a new account based on the URI values give
@@ -69,7 +72,8 @@ public class CreateAccountAPIcall {
             Gson g = new Gson();
             String myReturnJSON = g.toJson(response);   
             return myReturnJSON; 
-       }
+       }       
+      
        User user =  db.createAccount(username, pass, firstname, lastname);
        if(user != null){
             if(user.ID == -1){ // if userName already exist 
